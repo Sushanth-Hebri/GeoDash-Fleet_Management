@@ -11,3 +11,25 @@ function App() {
 }
 
 export default App;
+
+
+// import React, { useState } from 'react';
+// import DriverPage from './pages/DriverPage';
+// import TrackerPage from './pages/TrackerPage';
+
+// function App() {
+//   const [isDriver, setIsDriver] = useState(false);
+
+//   return (
+//     <div>
+//       <button onClick={() => setIsDriver(!isDriver)}>
+//         {isDriver ? 'Switch to Tracker' : 'Switch to Driver'}
+//       </button>
+//       {isDriver ? <DriverPage /> : <TrackerPage />}
+//     </div>
+//   );
+// }
+
+// export default App;
+
+
