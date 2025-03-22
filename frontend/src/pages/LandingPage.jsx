@@ -213,7 +213,7 @@ const LandingPage = () => {
           <Button
             variant="contained"
             sx={{ bgcolor: "#007bff", color: "white", display: { xs: "none", md: "block" } }}
-            onClick={() => navigate("/signup")}
+            onClick={() => navigate("/choosetherole")}
           >
             Sign Up
           </Button>
