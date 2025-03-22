@@ -1,250 +1,194 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from 'react'; // Import useState, useEffect, and useRef
 import {
   AppBar,
-  Toolbar,
-  Button,
-  Typography,
   Box,
+  Button,
+  Card,
+  CardContent,
   Container,
   Grid,
-  Paper,
-  CssBaseline,
   IconButton,
+  Typography,
+  useTheme,
+  useMediaQuery,
   Drawer,
   List,
   ListItem,
   ListItemText,
   Avatar,
-  Card,
-  CardContent,
-  CardMedia,
-  Tabs,
-  Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from "@mui/material";
+  Paper,
+  Fade,
+  Grow,
+} from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
 import {
-  FaTruckMoving,
-  FaUsers,
-  FaShieldAlt,
-  FaMapMarkedAlt,
-  FaFacebook,
-  FaTwitter,
-  FaLinkedin,
-  FaChartLine,
-  FaCogs,
-  FaHandshake,
-  FaQuoteLeft,
-  FaQuoteRight,
-} from "react-icons/fa";
-import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
-import { motion, useAnimation } from "framer-motion";
-import { useInView } from "react-intersection-observer";
-import { useNavigate } from "react-router-dom";
+  MapPin,
+  Activity,
+  Shield,
+  MessageSquare,
+  Route,
+  AlertTriangle,
+  Fuel,
+  BarChart3,
+  Menu,
+  X,
+  Facebook,
+  Twitter,
+  Linkedin,
+  Play,
+  Pause,
+} from 'lucide-react';
 
-// Images
-const heroBackground = "https://plus.unsplash.com/premium_photo-1733259739350-d30a39452c9a?q=80&w=2070&auto=format&fit=crop";
-const customerImage = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1964&auto=format&fit=crop";
-const driverImage = "https://images.unsplash.com/photo-1626397859727-6d15fb78d8ec?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-const ownerImage = "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop";
+// Data
+const features = [
+  { icon: MapPin, title: 'Real-Time GPS Tracking', description: 'Track your fleet in real-time with precision GPS technology' },
+  { icon: Activity, title: 'Speed Monitoring', description: 'Get instant alerts for speed violations and unsafe driving' },
+  { icon: Shield, title: 'Driver Fatigue Monitoring', description: 'AI-powered system to detect and prevent driver fatigue' },
+  { icon: MessageSquare, title: 'Real-Time Communication', description: 'Realtime chat between driver and Owner' },
+  { icon: Route, title: 'Route Optimization', description: 'AI-driven route planning for maximum efficiency' },
+  { icon: AlertTriangle, title: 'Incident Detection', description: 'Automatic detection and reporting of incidents' },
+  { icon: Fuel, title: 'Fuel Monitoring', description: 'Track and optimize fuel consumption across your fleet' },
+  { icon: BarChart3, title: 'Advanced Analytics', description: 'Comprehensive reporting and performance analytics' }
+];
 
-// Animation Variants
-const fadeInUp = {
-  hidden: { opacity: 0, y: 50 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-};
+const testimonials = [
+  {
+    name: 'Sarah Johnson',
+    role: 'Fleet Manager',
+    company: 'Global Logistics Inc.',
+    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400',
+    quote: 'This platform has revolutionized how we manage our fleet. The real-time tracking and analytics are invaluable.'
+  },
+  {
+    name: 'Michael Chen',
+    role: 'Operations Director',
+    company: 'FastTrack Delivery',
+    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
+    quote: 'The driver fatigue monitoring system has significantly improved our safety metrics.'
+  },
+  {
+    name: 'Emily Rodriguez',
+    role: 'Safety Coordinator',
+    company: 'Express Transport',
+    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400',
+    quote: 'Incident detection and real-time alerts have helped us respond faster to situations.'
+  }
+];
 
-const fadeIn = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.8 } },
-};
-
-// Animated Component
-const AnimatedBox = ({ children, variants, style }) => {
-  const controls = useAnimation();
-  const [ref, inView] = useInView({ triggerOnce: true });
-
-  React.useEffect(() => {
-    if (inView) {
-      controls.start("visible");
-    }
-  }, [controls, inView]);
+// Animation Component
+const FadeInSection = ({ children }) => {
+  const [ref, inView] = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
 
   return (
-    <motion.div ref={ref} initial="hidden" animate={controls} variants={variants} style={style}>
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 50 }}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+      transition={{ duration: 0.8 }}
+    >
       {children}
     </motion.div>
   );
 };
 
 const LandingPage = () => {
-  const navigate = useNavigate();
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [role, setRole] = useState("driver"); // For role selection
-  const chooseRoleRef = useRef(null); // Ref for "Choose Your Role" section
-  const [isHovered, setIsHovered] = useState(false); // For carousel hover state
-  const carouselRef = useRef(null); // Ref for carousel
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeFeature, setActiveFeature] = useState(0);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false); // Track video play state
+  const [isHovered, setIsHovered] = useState(false); // Track hover state
 
-  // Handle drawer toggle
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+  // Create a reference to the video element
+  const videoRef = useRef(null);
 
-  // Handle role change
-  const handleRoleChange = (event, newRole) => {
-    setRole(newRole);
-  };
-
-  // Scroll to "Choose Your Role" section
-  const scrollToChooseRole = () => {
-    if (chooseRoleRef.current) {
-      chooseRoleRef.current.scrollIntoView({ behavior: "smooth" });
+  // Function to handle play/pause
+  const handlePlayPause = () => {
+    const video = videoRef.current;
+    if (video.paused) {
+      video.play();
+      setIsVideoPlaying(true);
+    } else {
+      video.pause();
+      setIsVideoPlaying(false);
     }
   };
 
-  // Carousel auto-scroll
-  React.useEffect(() => {
-    const carousel = carouselRef.current;
-    let animationFrameId;
+  // Handle video end
+  const handleVideoEnd = () => {
+    setIsVideoPlaying(false);
+  };
 
-    const scrollCarousel = () => {
-      if (!isHovered && carousel) {
-        carousel.scrollLeft += 1; // Adjust scroll speed
-        if (carousel.scrollLeft >= carousel.scrollWidth - carousel.clientWidth) {
-          carousel.scrollLeft = 0; // Reset to start
-        }
-      }
-      animationFrameId = requestAnimationFrame(scrollCarousel);
-    };
+  // Handle hover
+  const handleHover = (hoverState) => {
+    setIsHovered(hoverState);
+  };
 
-    animationFrameId = requestAnimationFrame(scrollCarousel);
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [isHovered]);
-
-  // Menu items
-  const menuItems = ["Home", "Features", "Pricing", "Testimonials", "Contact"];
-
-  // Testimonials data
-  const testimonials = [
-    {
-      image: customerImage,
-      name: "John Doe",
-      role: "Fleet Manager",
-      company: "LogiCorp",
-      quote: "FleetTracker has transformed how we manage our vehicles. The real-time tracking is a game-changer!",
-    },
-    {
-      image: customerImage,
-      name: "Jane Smith",
-      role: "Logistics Coordinator",
-      company: "Transit Solutions",
-      quote: "The analytics dashboard is incredibly intuitive. It’s helped us reduce costs significantly.",
-    },
-    {
-      image: customerImage,
-      name: "Michael Johnson",
-      role: "Operations Director",
-      company: "Global Freight",
-      quote: "The safety features have given us peace of mind. Our drivers feel more secure on the road.",
-    },
-    {
-      image: customerImage,
-      name: "Emily Davis",
-      role: "Transport Supervisor",
-      company: "QuickMove Logistics",
-      quote: "Route optimization has saved us hours of planning and reduced fuel costs by 20%.",
-    },
-    {
-      image: customerImage,
-      name: "David Wilson",
-      role: "Fleet Owner",
-      company: "City Cargo",
-      quote: "FleetTracker is the best investment we’ve made. It’s streamlined our entire operation.",
-    },
-  ];
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveFeature((prev) => (prev + 1) % features.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <>
-      <CssBaseline />
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
+      {/* Navigation */}
+      <AppBar position="fixed" color="transparent" sx={{ backdropFilter: 'blur(10px)' }}>
+        <Container maxWidth="lg">
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 2 }}>
+            <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+              Fleetera
+            </Typography>
 
-      {/* Navbar */}
-      <AppBar position="sticky" sx={{ bgcolor: "white", color: "black", boxShadow: 2 }}>
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography variant="h6" fontWeight="bold" color="primary">
-            Fleetera
-          </Typography>
-
-          {/* Desktop Menu */}
-          <Box sx={{ display: { xs: "none", md: "block" } }}>
-            {menuItems.map((item) => (
-              <Button
-                key={item}
-                sx={{
-                  mx: 1,
-                  color: "black",
-                  fontWeight: "bold",
-                  transition: "0.3s",
-                  position: "relative",
-                  "&:hover": {
-                    color: "#007bff",
-                    "&::after": {
-                      content: '""',
-                      position: "absolute",
-                      left: 0,
-                      bottom: 0,
-                      width: "100%",
-                      height: "2px",
-                      backgroundColor: "#007bff",
-                      transition: "0.3s",
-                    },
-                  },
-                }}
-              >
-                {item}
-              </Button>
-            ))}
+            {isMobile ? (
+              <IconButton onClick={() => setIsMenuOpen(true)} color="primary">
+                <Menu />
+              </IconButton>
+            ) : (
+              <Box sx={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                {['Features', 'Solutions', 'Pricing', 'Contact'].map((item) => (
+                  <Button
+                    key={item}
+                    color="primary"
+                    sx={{
+                      fontWeight: 500,
+                      '&:hover': {
+                        backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                      },
+                    }}
+                  >
+                    {item}
+                  </Button>
+                ))}
+                <Button variant="contained" color="primary" sx={{ px: 4 }}>
+                  Get Started
+                </Button>
+              </Box>
+            )}
           </Box>
-
-          {/* Sign Up Button */}
-          <Button
-            variant="contained"
-            sx={{ bgcolor: "#007bff", color: "white", display: { xs: "none", md: "block" } }}
-            onClick={() => navigate("/choosetherole")}
-          >
-            Sign Up
-          </Button>
-
-          {/* Mobile Menu Toggle */}
-          <IconButton sx={{ display: { md: "none" } }} onClick={handleDrawerToggle}>
-            <AiOutlineMenu size={24} />
-          </IconButton>
-        </Toolbar>
+        </Container>
       </AppBar>
 
-      {/* Mobile Sidebar Menu */}
-      <Drawer anchor="right" open={mobileOpen} onClose={handleDrawerToggle}>
-        <Box sx={{ width: 250 }}>
-          <IconButton sx={{ display: "block", mx: "auto", mt: 2 }} onClick={handleDrawerToggle}>
-            <AiOutlineClose size={24} />
+      {/* Mobile Drawer */}
+      <Drawer anchor="right" open={isMenuOpen} onClose={() => setIsMenuOpen(false)}>
+        <Box sx={{ width: 250, pt: 2 }}>
+          <IconButton sx={{ ml: 2, mb: 2 }} onClick={() => setIsMenuOpen(false)}>
+            <X />
           </IconButton>
           <List>
-            {menuItems.map((item) => (
-              <ListItem button key={item} onClick={handleDrawerToggle}>
-                <ListItemText primary={item} />
+            {['Features', 'Solutions', 'Pricing', 'Contact'].map((text) => (
+              <ListItem button key={text}>
+                <ListItemText primary={text} />
               </ListItem>
             ))}
             <ListItem>
-              <Button
-                variant="contained"
-                fullWidth
-                sx={{ bgcolor: "#007bff", color: "white" }}
-                onClick={() => navigate("/signup")}
-              >
-                Sign Up
+              <Button variant="contained" fullWidth color="primary">
+                Get Started
               </Button>
             </ListItem>
           </List>
@@ -254,276 +198,426 @@ const LandingPage = () => {
       {/* Hero Section */}
       <Box
         sx={{
-          height: "100vh",
-          backgroundImage: `url(${heroBackground})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          textAlign: "center",
-          color: "white",
-          position: "relative",
-          "&:before": {
-            content: '""',
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            background: "rgba(0, 0, 0, 0.6)",
-          },
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          background: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=2000)`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          color: 'white',
+          pt: 8,
         }}
       >
-        <Container sx={{ zIndex: 2 }}>
-          <AnimatedBox variants={fadeInUp}>
-            <Typography variant="h2" fontWeight="bold" sx={{ fontSize: { xs: "2.5rem", md: "4rem" } }}>
-              Revolutionize Your Fleet Management
-            </Typography>
-            <Typography variant="h5" mt={2} sx={{ fontSize: { xs: "1.2rem", md: "1.5rem" } }}>
-              From real-time tracking to predictive analytics, we empower your business to thrive.
-            </Typography>
-            <Box mt={4}>
-              <Button
-                variant="contained"
-                size="large"
-                sx={{ mx: 1, bgcolor: "#007bff" }}
-                onClick={scrollToChooseRole}
-              >
-                Get Started
-              </Button>
-              <Button
-                variant="outlined"
-                size="large"
-                sx={{ mx: 1, borderColor: "#007bff", color: "#007bff" }}
-                onClick={() => navigate("/learnmore")}
-              >
-                Learn More
-              </Button>
-            </Box>
-          </AnimatedBox>
+        <Container maxWidth="lg">
+          <Grid container spacing={4} alignItems="center">
+            <Grid item xs={12} md={6}>
+              <Fade in timeout={1000}>
+                <Box>
+                  <Typography variant="h2" component="h1" gutterBottom fontWeight="bold">
+                    Next-Generation
+                    <Typography component="span" variant="h2" color="primary.main" fontWeight="bold">
+                      {' '}Fleet Management
+                    </Typography>
+                  </Typography>
+                  <Typography variant="h5" paragraph sx={{ mb: 4, color: 'grey.300' }}>
+                    Transform your fleet operations with real-time tracking, advanced analytics, and AI-powered insights
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="large"
+                      sx={{ px: 4, py: 1.5 }}
+                    >
+                      Start Free Trial
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      size="large"
+                      sx={{ px: 4, py: 1.5 }}
+                    >
+                      Watch Demo
+                    </Button>
+                  </Box>
+                </Box>
+              </Fade>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Grow in timeout={1500}>
+                <Box
+                  component={Paper}
+                  elevation={24}
+                  sx={{
+                    p: 2,
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(10px)',
+                    borderRadius: 4,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src="https://images.unsplash.com/photo-1509099652299-30938b0aeb63?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?auto=format&fit=crop&w=1000"
+                    sx={{
+                      width: '20%',
+                      borderRadius: 2,
+                      transform: 'scale(1.02)',
+                      transition: 'transform 0.3s ease-in-out',
+                      '&:hover': {
+                        transform: 'scale(1.05)',
+                      },
+                    }}
+                  />
+                </Box>
+              </Grow>
+            </Grid>
+          </Grid>
         </Container>
       </Box>
 
-      {/* Choose Your Role Section */}
-      <Container ref={chooseRoleRef} sx={{ mt: 8, textAlign: "center", scrollMarginTop: "68px" }}>
-        <AnimatedBox variants={fadeIn}>
-          <Typography variant="h4" fontWeight="bold" color="primary">
-            Choose Your Role
-          </Typography>
-          <Typography variant="body1" mt={2}>
-            Select your role to get started with FleetTracker.
-          </Typography>
-        </AnimatedBox>
-        <Tabs
-          value={role}
-          onChange={handleRoleChange}
-          centered
-          sx={{ mt: 4 }}
-          indicatorColor="primary"
-          textColor="primary"
-        >
-          <Tab label="Driver" value="driver" />
-          <Tab label="Owner" value="owner" />
-        </Tabs>
-        <Box mt={4}>
-          {role === "driver" ? (
-            <Card sx={{ maxWidth: 600, mx: "auto" }}>
-              <CardMedia component="img" height="300" image={driverImage} alt="Driver" />
-              <CardContent>
-                <Typography variant="h6" fontWeight="bold">
-                  Driver Login
-                </Typography>
-                <Typography variant="body2" mt={1}>
-                  Access real-time routes, schedules, and updates.
-                </Typography>
-                <Button variant="contained" sx={{ mt: 2, bgcolor: "#007bff" }}>
-                  Login as Driver
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card sx={{ maxWidth: 600, mx: "auto" }}>
-              <CardMedia component="img" height="300" image={ownerImage} alt="Owner" />
-              <CardContent>
-                <Typography variant="h6" fontWeight="bold">
-                  Owner Login
-                </Typography>
-                <Typography variant="body2" mt={1}>
-                  Manage your fleet, track performance, and optimize operations.
-                </Typography>
-                <Button variant="contained" sx={{ mt: 2, bgcolor: "#007bff" }}>
-                  Login as Owner
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </Box>
-      </Container>
-
-      {/* What We Solve Section */}
-      <Container sx={{ mt: 8, textAlign: "center" }}>
-        <AnimatedBox variants={fadeIn}>
-          <Typography variant="h4" fontWeight="bold" color="primary">
-            What We Solve
-          </Typography>
-          <Typography variant="body1" mt={2}>
-            As a tech-driven SaaS company, we address the following challenges:
-          </Typography>
-        </AnimatedBox>
-        <TableContainer component={Paper} sx={{ mt: 4 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ fontWeight: "bold", bgcolor: "#f8f9fa" }}>Challenges Faced by Customers</TableCell>
-                <TableCell sx={{ fontWeight: "bold", bgcolor: "#f8f9fa" }}>How We Solve Them</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {[
-                {
-                  challenge: "Inefficient Route Planning",
-                  solution: "AI-powered route optimization to reduce fuel costs and delivery times.",
-                },
-                {
-                  challenge: "Lack of Real-Time Visibility",
-                  solution: "Live GPS tracking for real-time fleet monitoring.",
-                },
-                {
-                  challenge: "High Operational Costs",
-                  solution: "Predictive analytics to identify cost-saving opportunities.",
-                },
-                {
-                  challenge: "Driver Safety Concerns",
-                  solution: "Advanced safety features like fatigue detection and emergency alerts.",
-                },
-                {
-                  challenge: "Poor Fleet Utilization",
-                  solution: "Data-driven insights to maximize fleet efficiency.",
-                },
-              ].map((row, index) => (
-                <TableRow key={index}>
-                  <TableCell>{row.challenge}</TableCell>
-                  <TableCell>{row.solution}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Container>
-
-      {/* Customer Experience Section */}
-      <Box sx={{ bgcolor: "#f8f9fa", py: 8, mt: 8 }}>
-        <Container>
-          <AnimatedBox variants={fadeIn}>
-            <Typography variant="h4" fontWeight="bold" color="primary" textAlign="center">
-              What Our Customers Say
+      {/* Features Section */}
+      <Box sx={{ py: 12, bgcolor: 'background.paper' }}>
+        <Container maxWidth="lg">
+          <FadeInSection>
+            <Typography variant="h3" component="h2" align="center" gutterBottom fontWeight="bold">
+              Powerful Features for Modern Fleet Management
             </Typography>
-          </AnimatedBox>
-          {/* Carousel Container */}
-          <Box
-            ref={carouselRef}
-            sx={{
-              display: "flex",
-              overflowX: "hidden",
-              gap: 4,
-              mt: 4,
-              scrollBehavior: "smooth",
-              "&:hover": {
-                overflowX: "auto", // Show scrollbar on hover
-              },
-            }}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          >
+          </FadeInSection>
+          
+          <Grid container spacing={4} sx={{ mt: 4 }}>
+            {features.map((feature, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <FadeInSection>
+                  <Card
+                    sx={{
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      transition: 'transform 0.3s ease-in-out',
+                      '&:hover': {
+                        transform: 'translateY(-8px)',
+                      },
+                    }}
+                  >
+                    <CardContent>
+                      <feature.icon size={48} color={theme.palette.primary.main} />
+                      <Typography variant="h6" component="h3" sx={{ mt: 2, mb: 1 }}>
+                        {feature.title}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {feature.description}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </FadeInSection>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Interactive Demo Section */}
+      <Box sx={{ py: 12, bgcolor: 'grey.100' }}>
+        <Container maxWidth="lg">
+          <FadeInSection>
+            <Typography variant="h3" component="h2" align="center" gutterBottom fontWeight="bold">
+              See Fleetera in Action
+            </Typography>
+          </FadeInSection>
+
+          <Grid container spacing={6} alignItems="center" sx={{ mt: 4 }}>
+            {/* Video Section */}
+            <Grid item xs={12} md={6}>
+              <FadeInSection>
+                <Box
+                  sx={{
+                    position: 'relative',
+                    borderRadius: 4,
+                    overflow: 'hidden',
+                    boxShadow: theme.shadows[20],
+                  }}
+                  onMouseEnter={() => handleHover(true)} // Handle hover in
+                  onMouseLeave={() => handleHover(false)} // Handle hover out
+                >
+                  {/* Embedded Video */}
+                  <Box
+                    component="video"
+                    controls={false} // Disable default controls
+                    poster="https://plus.unsplash.com/premium_photo-1661637686969-7fbcea8789ad?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" // Thumbnail for the video
+                    sx={{
+                      width: '100%',
+                      display: 'block',
+                      borderRadius: 4,
+                    }}
+                    ref={videoRef} // Ref to control the video
+                    onEnded={handleVideoEnd} // Handle video end
+                  >
+                    <source
+                      src="https://videos.pond5.com/logistics-and-transportation-truck-lorry-footage-291971416_main_xxl.mp4" // Replace with your demo video URL
+                      type="video/mp4"
+                    />
+                    Your browser does not support the video tag.
+                  </Box>
+
+                  {/* Play/Pause Button */}
+                  {(isHovered || !isVideoPlaying) && (
+                    <IconButton
+                      className="play-button"
+                      sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        bgcolor: 'primary.main',
+                        width: 80,
+                        height: 80,
+                        transition: 'transform 0.3s ease-in-out',
+                        '&:hover': {
+                          transform: 'translate(-50%, -50%) scale(1.1)', // Scale up on hover
+                          bgcolor: 'primary.dark',
+                        },
+                      }}
+                      onClick={handlePlayPause} // Toggle play/pause
+                    >
+                      {isVideoPlaying ? (
+                        <Pause size={40} color="white" /> // Show pause icon if video is playing
+                      ) : (
+                        <Play size={40} color="white" /> // Show play icon if video is paused
+                      )}
+                    </IconButton>
+                  )}
+                </Box>
+              </FadeInSection>
+            </Grid>
+
+            {/* Feature Description Section */}
+            <Grid item xs={12} md={6}>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeFeature}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <Typography variant="h4" gutterBottom color="primary" fontWeight="bold">
+                    {features[activeFeature].title}
+                  </Typography>
+                  <Typography variant="body1" paragraph>
+                    {features[activeFeature].description}
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 1, mt: 3 }}>
+                    {features.map((_, index) => (
+                      <Box
+                        key={index}
+                        onClick={() => setActiveFeature(index)}
+                        sx={{
+                          width: index === activeFeature ? 32 : 8,
+                          height: 8,
+                          borderRadius: 4,
+                          bgcolor: index === activeFeature ? 'primary.main' : 'grey.300',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease-in-out',
+                        }}
+                      />
+                    ))}
+                  </Box>
+                </motion.div>
+              </AnimatePresence>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Testimonials Section */}
+      <Box sx={{ py: 12, bgcolor: 'background.paper' }}>
+        <Container maxWidth="lg">
+          <FadeInSection>
+            <Typography variant="h3" component="h2" align="center" gutterBottom fontWeight="bold">
+              Trusted by Industry Leaders
+            </Typography>
+          </FadeInSection>
+
+          <Grid container spacing={4} sx={{ mt: 4 }}>
             {testimonials.map((testimonial, index) => (
-              <Card
-                key={index}
+              <Grid item xs={12} md={4} key={index}>
+                <FadeInSection>
+                  <Card
+                    sx={{
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      p: 3,
+                      transition: 'transform 0.3s ease-in-out',
+                      '&:hover': {
+                        transform: 'translateY(-8px)',
+                      },
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                      <Avatar
+                        src={testimonial.image}
+                        sx={{ width: 64, height: 64, mr: 2 }}
+                      />
+                      <Box>
+                        <Typography variant="h6" component="h3">
+                          {testimonial.name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {testimonial.role}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {testimonial.company}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Typography variant="body1" sx={{ fontStyle: 'italic' }}>
+                      "{testimonial.quote}"
+                    </Typography>
+                  </Card>
+                </FadeInSection>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* CTA Section */}
+      <Box
+        sx={{
+          py: 12,
+          bgcolor: 'primary.main',
+          color: 'white',
+        }}
+      >
+        <Container maxWidth="lg">
+          <FadeInSection>
+            <Box textAlign="center">
+              <Typography variant="h3" component="h2" gutterBottom fontWeight="bold">
+                Ready to Transform Your Fleet Operations?
+              </Typography>
+              <Typography variant="h6" paragraph sx={{ mb: 4 }}>
+                Join thousands of companies already using Fleetera to optimize their operations
+              </Typography>
+              <Button
+                variant="contained"                 size="large"
                 sx={{
-                  minWidth: 300,
-                  maxWidth: 350,
-                  p: 3,
-                  textAlign: "center",
-                  bgcolor: "white",
-                  borderRadius: 2,
-                  boxShadow: 3,
-                  flexShrink: 0, // Prevent cards from shrinking
+                  px: 6,
+                  py: 2,
+                  bgcolor: 'white',
+                  color: 'primary.main',
+                  '&:hover': {
+                    bgcolor: 'grey.100',
+                  },
                 }}
               >
-                <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
-                  <FaQuoteLeft size={24} color="#007bff" />
-                </Box>
-                <Typography variant="body1" sx={{ fontStyle: "italic", mb: 2 }}>
-                  "{testimonial.quote}"
-                </Typography>
-                <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
-                  <FaQuoteRight size={24} color="#007bff" />
-                </Box>
-                <Avatar src={testimonial.image} sx={{ width: 80, height: 80, mx: "auto", mb: 2 }} />
-                <Typography variant="h6" fontWeight="bold">
-                  {testimonial.name}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  {testimonial.role}, {testimonial.company}
-                </Typography>
-              </Card>
-            ))}
-          </Box>
+                Start Your Free Trial
+              </Button>
+            </Box>
+          </FadeInSection>
         </Container>
       </Box>
 
       {/* Footer */}
-      <Box sx={{ bgcolor: "#343a40", color: "white", mt: 8, py: 5 }}>
-        <Container>
-          <Grid container spacing={4}>
-            <Grid item xs={12} sm={4}>
-              <AnimatedBox variants={fadeIn}>
-                <Typography variant="h6" fontWeight="bold">
-                  Fleetera
-                </Typography>
-                <Typography variant="body2" mt={1}>
-                  Smart Fleet Management for seamless tracking & optimization.
-                </Typography>
-              </AnimatedBox>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <AnimatedBox variants={fadeIn}>
-                <Typography variant="h6" fontWeight="bold">
-                  Quick Links
-                </Typography>
-                {["Features", "Pricing", "Contact", "FAQs"].map((item) => (
-                  <Typography key={item} variant="body2" mt={1}>
-                    {item}
-                  </Typography>
+      <Box sx={{ bgcolor: 'background.paper', py: 8 }}>
+  <Container maxWidth="lg">
+    <Grid container spacing={4}>
+      {/* Company Info */}
+      <Grid item xs={12} md={4}>
+        <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>
+          Fleetera
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Next-generation fleet management solution for modern businesses
+        </Typography>
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            Bangalore, India
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Contact: +91 123 456 7890
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Email: support@fleetera.com
+          </Typography>
+        </Box>
+      </Grid>
+
+      {/* Quick Links */}
+      <Grid item xs={12} md={8}>
+        <Grid container spacing={4}>
+          {/* Product Links */}
+          <Grid item xs={12} sm={4}>
+            <Typography variant="h6" gutterBottom>
+              Product
+            </Typography>
+            <Typography variant="body2" component="div">
+              <Box component="ul" sx={{ p: 0, m: 0, listStyle: 'none' }}>
+                {['Features', 'Solutions', 'Pricing', 'Updates'].map((item) => (
+                  <Box component="li" key={item} sx={{ mb: 1 }}>
+                    <Button color="inherit" sx={{ p: 0 }}>
+                      {item}
+                    </Button>
+                  </Box>
                 ))}
-              </AnimatedBox>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <AnimatedBox variants={fadeIn}>
-                <Typography variant="h6" fontWeight="bold">
-                  Follow Us
-                
-                  </Typography>
-                <Box sx={{ display: "flex", gap: 2, mt: 1 }}>
-                  <IconButton sx={{ color: "white" }}>
-                    <FaFacebook size={20} />
-                  </IconButton>
-                  <IconButton sx={{ color: "white" }}>
-                    <FaTwitter size={20} />
-                  </IconButton>
-                  <IconButton sx={{ color: "white" }}>
-                    <FaLinkedin size={20} />
-                  </IconButton>
-                </Box>
-              </AnimatedBox>
-            </Grid>
+              </Box>
+            </Typography>
           </Grid>
-          <Box sx={{ textAlign: "center", mt: 4 }}>
-            <Typography variant="body2">© 2025 FleetTracker. All Rights Reserved.</Typography>
-          </Box>
-        </Container>
-      </Box>
-    </>
+
+          {/* Company Links */}
+          <Grid item xs={12} sm={4}>
+            <Typography variant="h6" gutterBottom>
+              Company
+            </Typography>
+            <Typography variant="body2" component="div">
+              <Box component="ul" sx={{ p: 0, m: 0, listStyle: 'none' }}>
+                {['About', 'Careers', 'Blog', 'Contact'].map((item) => (
+                  <Box component="li" key={item} sx={{ mb: 1 }}>
+                    <Button color="inherit" sx={{ p: 0 }}>
+                      {item}
+                    </Button>
+                  </Box>
+                ))}
+              </Box>
+            </Typography>
+          </Grid>
+
+          {/* Connect Links */}
+          <Grid item xs={12} sm={4}>
+            <Typography variant="h6" gutterBottom>
+              Connect
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <IconButton color="primary">
+                <Facebook />
+              </IconButton>
+              <IconButton color="primary">
+                <Twitter />
+              </IconButton>
+              <IconButton color="primary">
+                <Linkedin />
+              </IconButton>
+            </Box>
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="body2" color="text.secondary">
+                Follow us on social media for updates.
+              </Typography>
+            </Box>
+          </Grid>
+        </Grid>
+      </Grid>
+    </Grid>
+
+    {/* Copyright Notice */}
+    <Box sx={{ mt: 8, pt: 4, borderTop: 1, borderColor: 'divider', textAlign: 'center' }}>
+      <Typography variant="body2" color="text.secondary">
+        © 2025 Fleetera. All rights reserved.
+      </Typography>
+    </Box>
+  </Container>
+</Box>
+    </Box>
   );
 };
 
