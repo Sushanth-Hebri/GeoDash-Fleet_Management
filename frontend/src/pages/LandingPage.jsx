@@ -276,6 +276,8 @@ const LandingPage = () => {
         </Container>
       </Box>
 
+
+
       {/* Features Section */}
       <Box sx={{ py: 12, bgcolor: 'background.paper' }}>
         <Container maxWidth="lg">
@@ -316,6 +318,69 @@ const LandingPage = () => {
           </Grid>
         </Container>
       </Box>
+{/* Fleetera Model Section */}
+<Box sx={{ py: 12, bgcolor: 'grey.100' }}>
+  <Container maxWidth="lg">
+    <Grid container spacing={6} alignItems="center">
+      {/* Image Section */}
+      <Grid item xs={12} md={6}>
+        <FadeInSection>
+          <Box
+            sx={{
+              borderRadius: 4,
+              overflow: 'hidden',
+              boxShadow: theme.shadows[20],
+            }}
+          >
+            <Box
+              component="img"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWcpjiBvC6lj4_MV-4vCV6VYQj0PwgbD2zKw&s?auto=format&fit=crop&w=1000" // Replace with your model image URL
+              sx={{
+                width: '100%',
+                display: 'block',
+                borderRadius: 4,
+                transition: 'transform 0.3s ease-in-out',
+                '&:hover': {
+                  transform: 'scale(1.02)',
+                },
+              }}
+            />
+          </Box>
+        </FadeInSection>
+      </Grid>
+
+      {/* Know More Section */}
+      <Grid item xs={12} md={6}>
+        <FadeInSection>
+          <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
+            <Typography variant="h3" component="h2" gutterBottom fontWeight="bold">
+              Fleetera Model
+            </Typography>
+            <Typography variant="h6" color="text.secondary" paragraph>
+              Discover how our innovative model revolutionizes fleet management with cutting-edge technology and AI-driven solutions.
+            </Typography>
+            <Button
+              variant="contained"
+              size="large"
+              sx={{
+                px: 6,
+                py: 2,
+                bgcolor: 'primary.main',
+                color: 'white',
+                '&:hover': {
+                  bgcolor: 'primary.dark',
+                },
+              }}
+            >
+              Know More
+            </Button>
+          </Box>
+        </FadeInSection>
+      </Grid>
+    </Grid>
+  </Container>
+</Box>
+
 
       {/* Interactive Demo Section */}
       <Box sx={{ py: 12, bgcolor: 'grey.100' }}>
