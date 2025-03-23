@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'; // Import useState, useEffect, and useRef
+import { useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Box,
@@ -96,6 +97,7 @@ const FadeInSection = ({ children }) => {
 };
 
 const LandingPage = () => {
+  const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -105,7 +107,10 @@ const LandingPage = () => {
 
   // Create a reference to the video element
   const videoRef = useRef(null);
-
+// Creating refs for each section
+const featuresRef = useRef(null);
+const contactRef = useRef(null);
+const watchdemo = useRef(null);
   // Function to handle play/pause
   const handlePlayPause = () => {
     const video = videoRef.current;
@@ -135,9 +140,36 @@ const LandingPage = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const handleClick = (item) => {
+    const scrollOptions = { behavior: 'smooth' };
+  
+    if (item.toLowerCase() === 'features' && featuresRef.current) {
+      const yOffset = -100; // Adjust this value for extra margin
+      const y = featuresRef.current.getBoundingClientRect().top + window.scrollY + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    } else if (item.toLowerCase() === 'contact' && contactRef.current) {
+      contactRef.current.scrollIntoView(scrollOptions);
+    } 
+    else if(item.toLowerCase() === 'watchdemo' && watchdemo.current){
+      const yOffset = -100; // Adjust this value for extra margin
+      const y = watchdemo.current.getBoundingClientRect().top + window.scrollY + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+    else if (item.toLowerCase() === 'pricing') {
+      navigate('/pricing');
+    } else if (item.toLowerCase() === 'solutions') {
+      navigate('/solutions');
+    }
+  };
+  
+
   return (
-    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
-      {/* Navigation */}
+<Box
+  sx={{
+    background: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), #f5f5f5`, // Default light mode paper color
+    minHeight: '100vh',
+  }}
+>      {/* Navigation */}
       <AppBar position="fixed" color="transparent" sx={{ backdropFilter: 'blur(10px)' }}>
         <Container maxWidth="lg">
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 2 }}>
@@ -145,31 +177,24 @@ const LandingPage = () => {
               Fleetera
             </Typography>
 
-            {isMobile ? (
-              <IconButton onClick={() => setIsMenuOpen(true)} color="primary">
-                <Menu />
-              </IconButton>
-            ) : (
-              <Box sx={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                {['Features', 'Solutions', 'Pricing', 'Contact'].map((item) => (
-                  <Button
-                    key={item}
-                    color="primary"
-                    sx={{
-                      fontWeight: 500,
-                      '&:hover': {
-                        backgroundColor: 'rgba(25, 118, 210, 0.04)',
-                      },
-                    }}
-                  >
-                    {item}
-                  </Button>
-                ))}
-                <Button variant="contained" color="primary" sx={{ px: 4 }}>
-                  Get Started
+            <Box sx={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+              {['Features', 'Solutions', 'Pricing', 'Contact'].map((item) => (
+                <Button
+                  key={item}
+                  color="primary"
+                  onClick={() => handleClick(item)}
+                  sx={{
+                    fontWeight: 500,
+                    '&:hover': { backgroundColor: 'rgba(25, 118, 210, 0.04)' },
+                  }}
+                >
+                  {item}
                 </Button>
-              </Box>
-            )}
+              ))}
+              <Button variant="contained" color="primary" sx={{ px: 4 }}>
+                Get Started
+              </Button>
+            </Box>
           </Box>
         </Container>
       </AppBar>
@@ -228,6 +253,7 @@ const LandingPage = () => {
                       color="primary"
                       size="large"
                       sx={{ px: 4, py: 1.5 }}
+                      onClick={() => navigate('/pricing')}
                     >
                       Start Free Trial
                     </Button>
@@ -236,6 +262,7 @@ const LandingPage = () => {
                       color="primary"
                       size="large"
                       sx={{ px: 4, py: 1.5 }}
+                      onClick={() => handleClick('watchdemo')}
                     >
                       Watch Demo
                     </Button>
@@ -280,7 +307,7 @@ const LandingPage = () => {
 
       {/* Features Section */}
       <Box sx={{ py: 12, bgcolor: 'background.paper' }}>
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" ref={featuresRef} id="features" >
           <FadeInSection>
             <Typography variant="h3" component="h2" align="center" gutterBottom fontWeight="bold">
               Powerful Features for Modern Fleet Management
@@ -384,7 +411,7 @@ const LandingPage = () => {
 
       {/* Interactive Demo Section */}
       <Box sx={{ py: 12, bgcolor: 'grey.100' }}>
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" ref={watchdemo} id="watchdemo">
           <FadeInSection>
             <Typography variant="h3" component="h2" align="center" gutterBottom fontWeight="bold">
               See Fleetera in Action
@@ -556,7 +583,7 @@ const LandingPage = () => {
           color: 'white',
         }}
       >
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" ref={contactRef} id="contact">
           <FadeInSection>
             <Box textAlign="center">
               <Typography variant="h3" component="h2" gutterBottom fontWeight="bold">
@@ -566,19 +593,21 @@ const LandingPage = () => {
                 Join thousands of companies already using Fleetera to optimize their operations
               </Typography>
               <Button
-                variant="contained"                 size="large"
-                sx={{
-                  px: 6,
-                  py: 2,
-                  bgcolor: 'white',
-                  color: 'primary.main',
-                  '&:hover': {
-                    bgcolor: 'grey.100',
-                  },
-                }}
-              >
-                Start Your Free Trial
-              </Button>
+      variant="contained"
+      size="large"
+      sx={{
+        px: 6,
+        py: 2,
+        bgcolor: 'white',
+        color: 'primary.main',
+        '&:hover': {
+          bgcolor: 'grey.100',
+        },
+      }}
+      onClick={() => navigate('/pricing')}
+    >
+      Start Your Free Trial
+    </Button>
             </Box>
           </FadeInSection>
         </Container>

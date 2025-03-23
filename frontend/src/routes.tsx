@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import LearnMore from "./pages/LearnMore";
 import ChooseTheRole from "./pages/ChooseTheRole";
 import SignupForDriver from "./pages/SignUpForDriver";
+import Pricing from "./pages/Pricing";
 
 const AppRoutes = () =>{
     return(
@@ -18,6 +19,7 @@ const AppRoutes = () =>{
 <Route path="/learnmore" element={<LearnMore />} />
 <Route path="/choosetherole" element={<ChooseTheRole />} />
 <Route path="/signupfordriver" element={<SignupForDriver />} />
+<Route path="/pricing" element={<Pricing />} />
 </Routes>
 </Router>
 
