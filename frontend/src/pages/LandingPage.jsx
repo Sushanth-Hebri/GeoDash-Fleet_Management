@@ -26,8 +26,8 @@ import {
   MapPin,
   Activity,
   Shield,
+  Radar,
   MessageSquare,
-  Route,
   AlertTriangle,
   Fuel,
   BarChart3,
@@ -46,7 +46,7 @@ const features = [
   { icon: Activity, title: 'Speed Monitoring', description: 'Get instant alerts for speed violations and unsafe driving' },
   { icon: Shield, title: 'Driver Fatigue Monitoring', description: 'AI-powered system to detect and prevent driver fatigue' },
   { icon: MessageSquare, title: 'Real-Time Communication', description: 'Realtime chat between driver and Owner' },
-  { icon: Route, title: 'Route Optimization', description: 'AI-driven route planning for maximum efficiency' },
+  { icon: Radar, title: 'Fleet Radar', description: 'Get details of fleets appearing in the radar of a specified location and range.' },
   { icon: AlertTriangle, title: 'Incident Detection', description: 'Automatic detection and reporting of incidents' },
   { icon: Fuel, title: 'Fuel Monitoring', description: 'Track and optimize fuel consumption across your fleet' },
   { icon: BarChart3, title: 'Advanced Analytics', description: 'Comprehensive reporting and performance analytics' }
@@ -408,7 +408,7 @@ const LandingPage = () => {
                   {/* Embedded Video */}
                   <Box
                     component="video"
-                    controls={false} // Disable default controls
+                    controls={true} // Disable default controls
                     poster="https://plus.unsplash.com/premium_photo-1661637686969-7fbcea8789ad?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" // Thumbnail for the video
                     sx={{
                       width: '100%',
