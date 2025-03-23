@@ -34,6 +34,7 @@ import {
     Button,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import SearchIcon from "@mui/icons-material/Search";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -78,14 +79,15 @@ const vehicleRows = [
 
 const menuItems = [
     { text: 'Dashboard', icon: <DirectionsCarIcon /> },
-    { text: 'Notifications', icon: <NotificationsIcon /> },
     { text: 'Reports', icon: <BarChartIcon /> },
     { text: 'Fleet Radar', icon: <RadarIcon /> },
     { text: 'Advanced Analytics', icon: <BarChartIcon /> },
     { text: 'Speed Monitor', icon: <SpeedIcon /> },
     { text: 'Communicate with Driver', icon: <ChatIcon /> },
     { text: 'Add/Remove Vehicle', icon: <PlaylistAddCheckIcon /> },
+    { text: 'Geo trigger', icon: <GpsFixedIcon /> },
     { text: 'Settings', icon: <SettingsIcon /> },
+    
 ];
 
 const darkTheme = createTheme({
