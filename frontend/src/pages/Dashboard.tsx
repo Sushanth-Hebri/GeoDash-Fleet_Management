@@ -51,6 +51,8 @@ import Reports from "../components/Reports";
 import FleetRadar from "../components/FleetRadar";
 import GeoTrigger from "../components/GeoTrigger";
 import SpeedMonitor from "../components/SpeedMonitor";
+import { initializePendo } from "../utils/pendo";
+
 
 const socket = io("https://location-track-testing.onrender.com", {
     transports: ["polling"],
@@ -272,13 +274,33 @@ const Dashboard: React.FC = () => {
             </List>
             <Divider />
             <Box sx={{ p: 2 }}>
-                <Typography variant="body2" sx={{ color: 'white' }}>
-                    Dark Mode
-                </Typography>
-                <Switch checked={darkMode} onChange={handleThemeChange} color="primary" />
-            </Box>
+    <Typography variant="body2" sx={{ color: 'white' }}>
+        Dark Mode
+    </Typography>
+    <Switch 
+        checked={darkMode} 
+        onChange={() => {
+            handleThemeChange(); // Call it without arguments
+            window.pendo?.track("Dark Mode Toggled", { darkMode: !darkMode }); // Use the toggled state
+        }} 
+        color="primary" 
+    />
+</Box>
         </div>
     );
+
+
+    useEffect(() => {
+        const testUsersushanth = {
+            id: "935371",
+            email: "testusersushanth@example.com",
+            name: "Test User sushanth",
+            accountId: "67890"
+        };
+    console.log(1);
+        setTimeout(() => initializePendo(testUsersushanth), 1000);
+    }, []);
+
 
     return (
         <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
@@ -437,15 +459,20 @@ const Dashboard: React.FC = () => {
                         />
                     )}
 
-                    {activeView === 'geotrigger' && (
-                        <GeoTrigger 
-                            onClose={() => setActiveView('dashboard')} 
-                            vehicles={vehicleRows.map(row => ({
-                                id: row.id,
-                                vehicleNumber: row.vehicleNumber
-                            }))}
-                        />
-                    )}
+{activeView === 'geotrigger' && (
+    <>
+        {window.pendo ? window.pendo.track("geotrigger_clicked") : console.warn("Pendo is not loaded yet!")}
+
+        <GeoTrigger 
+            onClose={() => setActiveView('dashboard')} 
+            vehicles={vehicleRows.map(row => ({
+                id: row.id,
+                vehicleNumber: row.vehicleNumber
+            }))} 
+        />
+    </>
+)}
+
                     
                     {activeView === 'speedMonitor' && (
                         <SpeedMonitor 

@@ -11,7 +11,6 @@ import {
 } from '@mui/material';
 import SpeedIcon from '@mui/icons-material/Speed';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
-import VehicleSimulation from './VehicleSimulation';
 
 const SpeedMonitor = ({ vehicles, onClose }) => {
   const [speedData, setSpeedData] = useState(vehicles);
@@ -119,7 +118,6 @@ const SpeedMonitor = ({ vehicles, onClose }) => {
       </Box>
 
       {/* Vehicle Simulation Section */}
-      <VehicleSimulation speedData={speedData} />
 
       {/* Speed Breach Alert */}
       <Snackbar
