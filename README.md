@@ -1,4 +1,5 @@
-# GeoDash - Fleet Management System
+
+# GeoDash - Fleet Management System               status⏸️
 
 A modern, real-time fleet management and vehicle tracking solution for logistics companies.
 
@@ -214,6 +215,7 @@ Works perfectly on all devices:
 
 
 **Smart Fleet Management. Real-time Tracking. Professional Control.**
+
 
 
 
