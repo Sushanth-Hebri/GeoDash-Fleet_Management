@@ -191,7 +191,7 @@ const watchdemo = useRef(null);
                   {item}
                 </Button>
               ))}
-              <Button variant="contained" color="primary" sx={{ px: 4 }}>
+              <Button   onClick={() => navigate('/login')} variant="contained" color="primary" sx={{ px: 4 }}>
                 Get Started
               </Button>
             </Box>
@@ -361,7 +361,7 @@ const watchdemo = useRef(null);
           >
             <Box
               component="img"
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWcpjiBvC6lj4_MV-4vCV6VYQj0PwgbD2zKw&s?auto=format&fit=crop&w=1000" // Replace with your model image URL
+              src="https://sdmntprwestus.oaiusercontent.com/files/00000000-42f4-5230-a315-58081f01f5de/raw?se=2025-04-04T08%3A44%3A35Z&sp=r&sv=2024-08-04&sr=b&scid=d60392cb-f240-5ede-9be1-0a9f7190085a&skoid=e4438ed3-2a6f-4fd3-bf63-222012dc627c&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-04-04T07%3A36%3A01Z&ske=2025-04-05T07%3A36%3A01Z&sks=b&skv=2024-08-04&sig=Hqq9GOy9SXN2kBg4Jyr3Yjwa7I8ZZyXdxsz3bKfowIA%3D" // Replace with your model image URL
               sx={{
                 width: '100%',
                 display: 'block',
@@ -386,7 +386,7 @@ const watchdemo = useRef(null);
             <Typography variant="h6" color="text.secondary" paragraph>
               Discover how our innovative model revolutionizes fleet management with cutting-edge technology and AI-driven solutions.
             </Typography>
-            <Button
+            <Button onClick={() => navigate('/learnmore')}
               variant="contained"
               size="large"
               sx={{

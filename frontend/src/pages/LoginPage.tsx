@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { initializePendo } from "../utils/pendo";
+
 import {
     Box,
     Card,
@@ -13,6 +15,40 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
+// Define dummy users matching the initializePendo signature
+const UserList = [
+    {
+        id: "user-1",
+        email: "sushanth@example.com",
+        name: "sushanth",
+        accountId: "account-1",
+    },
+    {
+        id: "user-2",
+        email: "alice.smith@example.com",
+        name: "Alice Smith",
+        accountId: "account-2",
+    },
+    {
+        id: "user-3",
+        email: "bob.johnson@example.com",
+        name: "Bob Johnson",
+        accountId: "account-3",
+    },
+    {
+        id: "user-4",
+        email: "emily.williams@example.com",
+        name: "Emily Williams",
+        accountId: "account-4",
+    },
+    {
+        id: "user-5",
+        email: "michael.brown@example.com",
+        name: "Michael Brown",
+        accountId: "account-5",
+    },
+];
+
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -22,14 +58,35 @@ const Login = () => {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (email === "test@example.com" && password === "password") {
+        // Find user by email
+        const user = UserList.find((user) => user.email === email);
+
+        // Validate login (password is "227" for all users)
+        if (user && password === "227") {
             console.log("✅ Login successful!");
 
+            // Initialize Pendo with the user data
+            initializePendo({
+                id: user.id,
+                email: user.email,
+                full_name: user.name,
+                accountId: user.accountId,
+            });
             if (window.pendo) {
                 console.log("📡 Pendo: Identifying user", email);
-                window.pendo.identify({ id: email, email: email });
+            
+                // Ensure correct structure for pendo.identify()
+                (window.pendo as any).identify({
+                    id: user.id,
+                    email: user.email,
+                    account: {
+                        id: user.accountId, 
+                    },
+                });
+            
                 window.pendo.track("User Logged In");
             }
+            
 
             navigate("/dashboard");
         } else {
@@ -80,13 +137,15 @@ const Login = () => {
                         variant="h4"
                         fontWeight="bold"
                         mb={2}
-                        sx={{
-                            color: "#0056b3",
-                        }}
+                        sx={{ color: "#0056b3" }}
                     >
                         Welcome Back 👋
                     </Typography>
-                    <Typography variant="body1" color="rgba(0, 0, 0, 0.7)" mb={3}>
+                    <Typography
+                        variant="body1"
+                        color="rgba(0, 0, 0, 0.7)"
+                        mb={3}
+                    >
                         Please enter your credentials to continue
                     </Typography>
 
@@ -105,12 +164,15 @@ const Login = () => {
                                         "& .MuiOutlinedInput-notchedOutline": {
                                             borderColor: "#0056b3",
                                         },
-                                        "&:hover .MuiOutlinedInput-notchedOutline": {
-                                            borderColor: "#007bff",
-                                        },
+                                        "&:hover .MuiOutlinedInput-notchedOutline":
+                                            {
+                                                borderColor: "#007bff",
+                                            },
                                     },
                                 }}
-                                InputLabelProps={{ style: { color: "rgba(0, 0, 0, 0.6)" } }}
+                                InputLabelProps={{
+                                    style: { color: "rgba(0, 0, 0, 0.6)" },
+                                }}
                             />
                             <TextField
                                 label="Password"
@@ -124,11 +186,19 @@ const Login = () => {
                                     endAdornment: (
                                         <InputAdornment position="end">
                                             <IconButton
-                                                onClick={() => setShowPassword(!showPassword)}
+                                                onClick={() =>
+                                                    setShowPassword(
+                                                        !showPassword
+                                                    )
+                                                }
                                                 edge="end"
                                                 sx={{ color: "#0056b3" }}
                                             >
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                {showPassword ? (
+                                                    <VisibilityOff />
+                                                ) : (
+                                                    <Visibility />
+                                                )}
                                             </IconButton>
                                         </InputAdornment>
                                     ),
@@ -137,12 +207,15 @@ const Login = () => {
                                         "& .MuiOutlinedInput-notchedOutline": {
                                             borderColor: "#0056b3",
                                         },
-                                        "&:hover .MuiOutlinedInput-notchedOutline": {
-                                            borderColor: "#007bff",
-                                        },
+                                        "&:hover .MuiOutlinedInput-notchedOutline":
+                                            {
+                                                borderColor: "#007bff",
+                                            },
                                     },
                                 }}
-                                InputLabelProps={{ style: { color: "rgba(0, 0, 0, 0.6)" } }}
+                                InputLabelProps={{
+                                    style: { color: "rgba(0, 0, 0, 0.6)" },
+                                }}
                             />
                             <Button
                                 type="submit"

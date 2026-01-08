@@ -290,18 +290,6 @@ const Dashboard: React.FC = () => {
     );
 
 
-    useEffect(() => {
-        const testUsersushanth = {
-            id: "935371",
-            email: "testusersushanth@example.com",
-            name: "Test User sushanth",
-            accountId: "67890"
-        };
-    console.log(1);
-        setTimeout(() => initializePendo(testUsersushanth), 1000);
-    }, []);
-
-
     return (
         <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
             <Box sx={{ display: "flex" }}>

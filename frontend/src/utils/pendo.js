@@ -1,4 +1,4 @@
-export function initializePendo(user: { id: string; email?: string; name?: string; accountId?: string }) {
+export function initializePendo(user: { id: string; email?: string; full_name?: string; accountId?: string }) {
     if (!window.pendo || typeof window.pendo.initialize !== "function") {
         console.error("Pendo is not loaded yet!");
         return;
@@ -14,10 +14,13 @@ export function initializePendo(user: { id: string; email?: string; name?: strin
         visitor: {
             id: user.id || "anonymous", // Fallback to avoid empty ID
             email: user.email || "",
-            full_name: user.name || "",
+            name: user.full_name || "",
         },
         account: {
             id: user.accountId || "unknown_account",
+        },
+        events: {
+            autoTrack: false, // Disable automatic event tracking
         }
     });
 
