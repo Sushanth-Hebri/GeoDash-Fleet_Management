@@ -330,7 +330,7 @@ const Dashboard: React.FC = () => {
         <div>
             <Toolbar sx={{ bgcolor: darkMode ? 'primary.main' : 'primary.main', color: 'white' }}>
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                    Fleetera
+                    GeoDash
                 </Typography>
             </Toolbar>
             <Divider />
@@ -460,7 +460,7 @@ const Dashboard: React.FC = () => {
                             </IconButton>
                             
                             <Typography variant="h6" noWrap component="div" sx={{ minWidth: 200 }}>
-                                Fleetera
+                                GeoDash
                             </Typography>
                         </Box>
 
@@ -513,7 +513,7 @@ const Dashboard: React.FC = () => {
                                     fontWeight: 600,
                                 }}
                             >
-                                <MenuItem value="all">🚚 All Fleets</MenuItem>
+                                <MenuItem value="all">All Fleets</MenuItem>
                                 <MenuItem value="fleet1">🚚 Fleet A</MenuItem>
                                 <MenuItem value="fleet2">🚚 Fleet B</MenuItem>
                                 <MenuItem value="fleet3">🚚 Fleet C</MenuItem>
@@ -848,7 +848,7 @@ const Dashboard: React.FC = () => {
                             {/* Vehicle Information */}
                             <Paper sx={{ p: 2, mb: 2 }}>
                                 <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
-                                    🚚 Vehicle Information
+                                  Vehicle Information
                                 </Typography>
                                 <Divider sx={{ mb: 1 }} />
                                 <Box sx={{ display: 'grid', gap: 1 }}>

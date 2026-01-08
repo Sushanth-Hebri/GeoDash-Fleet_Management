@@ -61,7 +61,7 @@ const navigate = useNavigate();
         <Container maxWidth="lg">
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 2 }}>
             <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: 'white' }}  onClick={() => navigate('/')}>
-              Fleetera
+              GeoDash
             </Typography>
 
             {isMobile ? (

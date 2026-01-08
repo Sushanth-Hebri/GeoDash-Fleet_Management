@@ -116,19 +116,19 @@ const SignupForDriver = () => {
         </Stack>
       ),
     },
-    { label: "Download Fleetera App", content: (
+    { label: "Download GeoDash App", content: (
         <Stack spacing={3} alignItems="center">
           {isMobile ? (
             <>
-              <Typography variant="h6">Download Fleetera App</Typography>
-              <Button variant="contained" color="primary" href="https://fleetera.com/download">
-                Download Fleetera App
+              <Typography variant="h6">Download GeoDash App</Typography>
+              <Button variant="contained" color="primary" href="https://GeoDash.com/download">
+                Download GeoDash App
               </Button>
             </>
           ) : (
             <>
-              <Typography variant="h6">Scan QR Code to Download Fleetera App</Typography>
-              <img src="https://images.unsplash.com/photo-1595079676714-d804bc1095b4?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Fleetera QR Code" width={200} height={200} />
+              <Typography variant="h6">Scan QR Code to Download GeoDash App</Typography>
+              <img src="https://images.unsplash.com/photo-1595079676714-d804bc1095b4?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="GeoDash QR Code" width={200} height={200} />
               <Typography variant="body2" color="textSecondary">
                 Use your mobile device to scan and download.
               </Typography>

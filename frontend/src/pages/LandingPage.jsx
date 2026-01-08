@@ -174,7 +174,7 @@ const watchdemo = useRef(null);
         <Container maxWidth="lg">
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 2 }}>
             <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-              Fleetera
+              GeoDash
             </Typography>
 
             <Box sx={{ display: 'flex', gap: 4, alignItems: 'center' }}>
@@ -345,7 +345,7 @@ const watchdemo = useRef(null);
           </Grid>
         </Container>
       </Box>
-{/* Fleetera Model Section */}
+{/* GeoDash Model Section */}
 <Box sx={{ py: 12, bgcolor: 'grey.100' }}>
   <Container maxWidth="lg">
     <Grid container spacing={6} alignItems="center">
@@ -361,7 +361,7 @@ const watchdemo = useRef(null);
           >
             <Box
               component="img"
-              src="https://sdmntprwestus.oaiusercontent.com/files/00000000-42f4-5230-a315-58081f01f5de/raw?se=2025-04-04T08%3A44%3A35Z&sp=r&sv=2024-08-04&sr=b&scid=d60392cb-f240-5ede-9be1-0a9f7190085a&skoid=e4438ed3-2a6f-4fd3-bf63-222012dc627c&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-04-04T07%3A36%3A01Z&ske=2025-04-05T07%3A36%3A01Z&sks=b&skv=2024-08-04&sig=Hqq9GOy9SXN2kBg4Jyr3Yjwa7I8ZZyXdxsz3bKfowIA%3D" // Replace with your model image URL
+              src="https://plus.unsplash.com/premium_photo-1682144324433-ae1ee89a0238?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" // Replace with your model image URL
               sx={{
                 width: '100%',
                 display: 'block',
@@ -381,7 +381,7 @@ const watchdemo = useRef(null);
         <FadeInSection>
           <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
             <Typography variant="h3" component="h2" gutterBottom fontWeight="bold">
-              Fleetera Model
+              GeoDash Model
             </Typography>
             <Typography variant="h6" color="text.secondary" paragraph>
               Discover how our innovative model revolutionizes fleet management with cutting-edge technology and AI-driven solutions.
@@ -414,7 +414,7 @@ const watchdemo = useRef(null);
         <Container maxWidth="lg" ref={watchdemo} id="watchdemo">
           <FadeInSection>
             <Typography variant="h3" component="h2" align="center" gutterBottom fontWeight="bold">
-              See Fleetera in Action
+              See GeoDash in Action
             </Typography>
           </FadeInSection>
 
@@ -590,7 +590,7 @@ const watchdemo = useRef(null);
                 Ready to Transform Your Fleet Operations?
               </Typography>
               <Typography variant="h6" paragraph sx={{ mb: 4 }}>
-                Join thousands of companies already using Fleetera to optimize their operations
+                Join thousands of companies already using GeoDash to optimize their operations
               </Typography>
               <Button
       variant="contained"
@@ -620,7 +620,7 @@ const watchdemo = useRef(null);
       {/* Company Info */}
       <Grid item xs={12} md={4}>
         <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>
-          Fleetera
+          GeoDash
         </Typography>
         <Typography variant="body2" color="text.secondary">
           Next-generation fleet management solution for modern businesses
@@ -633,7 +633,7 @@ const watchdemo = useRef(null);
             Contact: +91 123 456 7890
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Email: support@fleetera.com
+            Email: support@GeoDash.com
           </Typography>
         </Box>
       </Grid>
@@ -706,7 +706,7 @@ const watchdemo = useRef(null);
     {/* Copyright Notice */}
     <Box sx={{ mt: 8, pt: 4, borderTop: 1, borderColor: 'divider', textAlign: 'center' }}>
       <Typography variant="body2" color="text.secondary">
-        © 2025 Fleetera. All rights reserved.
+        © 2025 GeoDash. All rights reserved.
       </Typography>
     </Box>
   </Container>

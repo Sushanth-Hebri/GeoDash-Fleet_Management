@@ -33,7 +33,7 @@ const LearnMore = () => {
 
           {/* Brand Name */}
           <Typography variant="h6" fontWeight="bold" color="primary">
-            Fleetera
+            GeoDash
           </Typography>
 
           {/* Empty Box to balance the layout */}
@@ -44,7 +44,7 @@ const LearnMore = () => {
       {/* Learn More Content */}
       <Container sx={{ mt: 4, textAlign: "center" }}>
         <Typography variant="h3" fontWeight="bold" color="primary" gutterBottom>
-          Learn More About Fleetera
+          Learn More About GeoDash
         </Typography>
 
         {/* Section 1: What We Offer */}
@@ -53,7 +53,7 @@ const LearnMore = () => {
             What We Offer
           </Typography>
           <Typography variant="body1" sx={{ maxWidth: "800px", mx: "auto" }}>
-            Fleetera is a cutting-edge fleet management solution designed to help businesses optimize their operations, reduce costs, and improve efficiency. Our platform offers real-time tracking, predictive analytics, and advanced safety features to ensure your fleet is always running at its best.
+            GeoDash is a cutting-edge fleet management solution designed to help businesses optimize their operations, reduce costs, and improve efficiency. Our platform offers real-time tracking, predictive analytics, and advanced safety features to ensure your fleet is always running at its best.
           </Typography>
         </Box>
 
@@ -101,7 +101,7 @@ const LearnMore = () => {
             Why Choose Us?
           </Typography>
           <Typography variant="body1" sx={{ maxWidth: "800px", mx: "auto" }}>
-            Fleetera is trusted by businesses worldwide for its reliability, scalability, and ease of use. Our platform is designed to grow with your business, offering customizable features and 24/7 support to ensure your success.
+            GeoDash is trusted by businesses worldwide for its reliability, scalability, and ease of use. Our platform is designed to grow with your business, offering customizable features and 24/7 support to ensure your success.
           </Typography>
         </Box>
 
@@ -115,7 +115,7 @@ const LearnMore = () => {
               {
                 name: "John Doe",
                 role: "Fleet Manager",
-                quote: "Fleetera has transformed how we manage our vehicles. The real-time tracking is a game-changer!",
+                quote: "GeoDash has transformed how we manage our vehicles. The real-time tracking is a game-changer!",
               },
               {
                 name: "Jane Smith",
@@ -157,7 +157,7 @@ const LearnMore = () => {
           <Grid container spacing={4}>
             <Grid item xs={12} sm={4}>
               <Typography variant="h6" fontWeight="bold">
-                Fleetera
+                GeoDash
               </Typography>
               <Typography variant="body2" mt={1}>
                 Smart Fleet Management for seamless tracking & optimization.
@@ -191,7 +191,7 @@ const LearnMore = () => {
             </Grid>
           </Grid>
           <Box sx={{ textAlign: "center", mt: 4 }}>
-            <Typography variant="body2">© 2025 Fleetera. All Rights Reserved.</Typography>
+            <Typography variant="body2">© 2025 GeoDash. All Rights Reserved.</Typography>
           </Box>
         </Container>
       </Box>
