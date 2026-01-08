@@ -1,3 +1,7 @@
+# What you will get to know ?
+1. How to extract useful data from mobile for real world use cases
+2. What matters most for a problem statement
+3. GPS based use cases
 
 # GeoDash - Fleet Management System 
 
@@ -216,6 +220,7 @@ Works perfectly on all devices:
 
 
 **Smart Fleet Management. Real-time Tracking. Professional Control.**
+
 
 
 
