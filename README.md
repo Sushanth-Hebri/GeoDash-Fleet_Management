@@ -209,13 +209,14 @@ Works perfectly on all devices:
 ## Version Information
 
 - **Version:** 1.0.0
-- **Status:** Production Ready
+- **Status:** on hold. no intent for deployment yet
 - **Last Updated:** January 8, 2026
 
 ---
 
 
 **Smart Fleet Management. Real-time Tracking. Professional Control.**
+
 
 
 
