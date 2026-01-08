@@ -36,8 +36,6 @@ GeoDash is an intelligent fleet management platform that helps logistics compani
 
 ![GeoDash landing page](images/geo%20trigger.png)
 
-![GeoDash landing page](images/fleet%20radar.png)
-
 ![GeoDash landing page](images/reports.png)
 
 ![GeoDash landing page](images/speed%20monitor.png)
@@ -216,6 +214,7 @@ Works perfectly on all devices:
 
 
 **Smart Fleet Management. Real-time Tracking. Professional Control.**
+
 
 
 
