@@ -6,6 +6,8 @@ A modern, real-time fleet management and vehicle tracking solution for logistics
 
 GeoDash is an intelligent fleet management platform that helps logistics companies track vehicles in real-time, manage driver alerts, and optimize fleet operations. Built with modern web technologies, it provides instant visibility into your entire vehicle fleet with a beautiful, intuitive dashboard.
 
+![GeoDash Dashboard](images/geodashimg1.png)
+
 ## Key Features
 
 ### Live Vehicle Tracking
@@ -187,5 +189,6 @@ Works perfectly on all devices:
 - **Last Updated:** January 8, 2026
 
 ---
+
 
 **Smart Fleet Management. Real-time Tracking. Professional Control.**
