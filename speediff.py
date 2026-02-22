@@ -1,10 +1,11 @@
 import subprocess
 import itertools
-import re
 import sys
+import os
+
 
 # -----------------------------
-# Utility to run git commands
+# Run shell command
 # -----------------------------
 def run(cmd):
     return subprocess.run(cmd, capture_output=True, text=True)
@@ -14,9 +15,22 @@ def run(cmd):
 # Count real conflict blocks
 # -----------------------------
 def count_conflict_blocks():
-    diff = run(["git", "diff"]).stdout
-    blocks = len(re.findall(r'^<<<<<<<', diff, re.MULTILINE))
-    return blocks
+    # Get files with unresolved conflicts
+    result = run(["git", "diff", "--name-only", "--diff-filter=U"]).stdout.strip()
+
+    if not result:
+        return 0
+
+    files = result.splitlines()
+    total_blocks = 0
+
+    for file in files:
+        if os.path.exists(file):
+            with open(file, "r", encoding="utf-8", errors="ignore") as f:
+                content = f.read()
+                total_blocks += content.count("<<<<<<<")
+
+    return total_blocks
 
 
 # -----------------------------
@@ -46,10 +60,10 @@ def simulate_order(order):
 
             print(f"    Conflict blocks: {blocks} | Score added: {score}")
 
-            # Abort conflict
+            # Abort the failed merge
             run(["git", "merge", "--abort"])
 
-            # Re-merge with automatic resolution to continue simulation
+            # Re-merge using automatic resolution to continue simulation
             run([
                 "git", "merge",
                 "--no-commit",
@@ -65,7 +79,7 @@ def simulate_order(order):
             run(["git", "commit", "-m", "clean merge"])
             print("    Clean merge (no conflicts)")
 
-    # Cleanup
+    # Cleanup temp branch
     run(["git", "checkout", "main"])
     run(["git", "branch", "-D", "temp-merge-sim"])
 
@@ -73,14 +87,13 @@ def simulate_order(order):
 
 
 # -----------------------------
-# Find globally optimal order
+# Find global optimal order
 # -----------------------------
 def find_best_order(branches):
     best_order = None
     best_score = float("inf")
 
     permutations = list(itertools.permutations(branches))
-
     print(f"\nTesting {len(permutations)} possible merge orders...\n")
 
     for perm in permutations:
@@ -105,13 +118,13 @@ if __name__ == "__main__":
 
     branches = sys.argv[1:]
 
-    # Ensure repo is clean before starting
+    # Ensure working directory is clean
     status = run(["git", "status", "--porcelain"]).stdout.strip()
     if status:
-        print("❌ Working directory not clean. Please commit or stash changes first.")
+        print("❌ Working directory not clean. Commit or stash changes first.")
         sys.exit(1)
 
-    # Fetch latest
+    # Fetch latest remote changes
     run(["git", "fetch", "origin"])
 
     best_order, best_score = find_best_order(branches)
