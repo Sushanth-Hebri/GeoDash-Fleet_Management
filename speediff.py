@@ -1,98 +1,127 @@
 import subprocess
+import itertools
 import re
+import sys
 
-BASE_BRANCH = "main"
-
-
+# -----------------------------
+# Utility to run git commands
+# -----------------------------
 def run(cmd):
-    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-    return result.stdout.strip()
+    return subprocess.run(cmd, capture_output=True, text=True)
 
 
-def get_merge_tree_output(base, head, branch):
-    return run(f"git merge-tree {base} {head} {branch}")
+# -----------------------------
+# Count real conflict blocks
+# -----------------------------
+def count_conflict_blocks():
+    diff = run(["git", "diff"]).stdout
+    blocks = len(re.findall(r'^<<<<<<<', diff, re.MULTILINE))
+    return blocks
 
 
-def analyze_conflicts(merge_output):
-    conflict_blocks = re.findall(r"<<<<<<<.*?>>>>>>>.*?\n", merge_output, re.DOTALL)
-    conflict_lines = sum(len(block.split("\n")) for block in conflict_blocks)
-    file_paths = re.findall(r"changed in both\n\s+(.*)", merge_output)
+# -----------------------------
+# Simulate one merge order
+# -----------------------------
+def simulate_order(order):
+    total_score = 0
 
-    return {
-        "conflict_lines": conflict_lines,
-        "block_count": len(conflict_blocks),
-        "file_count": len(file_paths),
-    }
+    # Create/reset temp branch from origin/main
+    run(["git", "checkout", "-B", "temp-merge-sim", "origin/main"])
 
+    for branch in order:
+        print(f"  Merging {branch}...")
 
-def calculate_difficulty(data):
-    score = 0
+        merge = run([
+            "git", "merge",
+            "--no-commit",
+            "--no-ff",
+            f"origin/{branch}"
+        ])
 
-    # Line complexity (small weight)
-    score += data["conflict_lines"] * 0.5
+        if merge.returncode != 0:
+            # Conflict occurred
+            blocks = count_conflict_blocks()
+            score = blocks * 20
+            total_score += score
 
-    # Logical conflict blocks (medium weight)
-    score += data["block_count"] * 8
+            print(f"    Conflict blocks: {blocks} | Score added: {score}")
 
-    # Cross-file conflicts (heavy weight)
-    score += data["file_count"] * 15
+            # Abort conflict
+            run(["git", "merge", "--abort"])
 
-    # Extra penalty if many files
-    if data["file_count"] >= 5:
-        score += 20
+            # Re-merge with automatic resolution to continue simulation
+            run([
+                "git", "merge",
+                "--no-commit",
+                "--no-ff",
+                "-X", "ours",
+                f"origin/{branch}"
+            ])
 
-    return score
+            run(["git", "commit", "-m", "auto-resolved for simulation"])
 
+        else:
+            # Clean merge
+            run(["git", "commit", "-m", "clean merge"])
+            print("    Clean merge (no conflicts)")
 
-def generate_reason(data):
-    if data["file_count"] == 0:
-        return "No conflicts detected"
+    # Cleanup
+    run(["git", "checkout", "main"])
+    run(["git", "branch", "-D", "temp-merge-sim"])
 
-    if data["file_count"] > 5:
-        return "High cross-file conflict risk"
-
-    if data["block_count"] > 10:
-        return "Multiple logical conflict blocks"
-
-    if data["conflict_lines"] > 50:
-        return "Large conflicting code sections"
-
-    return "Moderate merge complexity"
-
-
-def optimize(branches):
-    run("git fetch")
-
-    current_head = run(f"git rev-parse origin/{BASE_BRANCH}")
-    order = []
-
-    for branch in branches:
-        branch_commit = run(f"git rev-parse origin/{branch}")
-        base = run(f"git merge-base {current_head} {branch_commit}")
-
-        merge_output = get_merge_tree_output(base, current_head, branch_commit)
-        data = analyze_conflicts(merge_output)
-
-        score = calculate_difficulty(data)
-        reason = generate_reason(data)
-
-        order.append((branch, score, reason))
-
-    order.sort(key=lambda x: x[1])
-    return order
+    return total_score
 
 
+# -----------------------------
+# Find globally optimal order
+# -----------------------------
+def find_best_order(branches):
+    best_order = None
+    best_score = float("inf")
+
+    permutations = list(itertools.permutations(branches))
+
+    print(f"\nTesting {len(permutations)} possible merge orders...\n")
+
+    for perm in permutations:
+        print(f"Testing order: {perm}")
+        score = simulate_order(perm)
+        print(f"Total score for this order: {score}\n")
+
+        if score < best_score:
+            best_score = score
+            best_order = perm
+
+    return best_order, best_score
+
+
+# -----------------------------
+# Entry point
+# -----------------------------
 if __name__ == "__main__":
-    import sys
+    if len(sys.argv) < 2:
+        print("Usage: python speediff.py branch1 branch2 branch3 ...")
+        sys.exit(1)
 
     branches = sys.argv[1:]
 
-    if not branches:
-        print("Provide branch names to evaluate.")
-        exit(1)
+    # Ensure repo is clean before starting
+    status = run(["git", "status", "--porcelain"]).stdout.strip()
+    if status:
+        print("❌ Working directory not clean. Please commit or stash changes first.")
+        sys.exit(1)
 
-    result = optimize(branches)
+    # Fetch latest
+    run(["git", "fetch", "origin"])
 
-    print("\nBest order to merge:\n")
-    for i, (branch, score, reason) in enumerate(result, 1):
-        print(f"{i}. {branch} | Score: {score:.2f} | {reason}")
+    best_order, best_score = find_best_order(branches)
+
+    print("\n==========================================")
+    print("🏆 Optimal Merge Order (Global Minimum)")
+    print("==========================================\n")
+
+    for i, branch in enumerate(best_order, 1):
+        print(f"{i}. {branch}")
+
+    print(f"\nTotal Cumulative Conflict Score: {best_score}")
+    print("==========================================\n")
