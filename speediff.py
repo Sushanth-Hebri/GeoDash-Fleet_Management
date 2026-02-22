@@ -136,5 +136,5 @@ if __name__ == "__main__":
     for i, branch in enumerate(best_order, 1):
         print(f"{i}. {branch}")
 
-    print(f"\nTotal Cumulative Conflict Score: {best_score}")
+    print(f"\nTotal Cumulative Conflict Score: { best_score}")
     print("==========================================\n")
