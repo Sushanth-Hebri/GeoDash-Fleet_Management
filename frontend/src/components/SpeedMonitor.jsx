@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Typography,
@@ -7,58 +7,110 @@ import {
   Avatar,
   LinearProgress,
   Alert,
-  Snackbar
-} from '@mui/material';
-import SpeedIcon from '@mui/icons-material/Speed';
-import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+  Snackbar,
+  Chip,
+  Divider,
+  CircularProgress
+} from "@mui/material";
+import SpeedIcon from "@mui/icons-material/Speed";
+import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 
-const SpeedMonitor = ({ vehicles, onClose }) => {
+const POLL_INTERVAL = 3000;
+const BREACH_COOLDOWN = 10000; // 10 sec per vehicle
+
+const SpeedMonitor = ({ vehicles = [] }) => {
   const [speedData, setSpeedData] = useState(vehicles);
-  const [speedBreaches, setSpeedBreaches] = useState([]);
-  const [openAlert, setOpenAlert] = useState(false);
+  const [breachHistory, setBreachHistory] = useState([]);
+  const [alertQueue, setAlertQueue] = useState([]);
   const [currentAlert, setCurrentAlert] = useState(null);
+  const [openAlert, setOpenAlert] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const lastBreachRef = useRef({});
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      fetch('/api/vehicle-data')
-        .then(response => response.json())
-        .then(data => {
-          setSpeedData(data);
-          data.forEach(vehicle => {
-            if (vehicle.currentSpeed > vehicle.maxSpeed) {
-              const breach = {
-                id: Date.now(),
-                vehicleId: vehicle.id,
-                vehicleNumber: vehicle.vehicleNumber,
-                speed: vehicle.currentSpeed,
-                maxSpeed: vehicle.maxSpeed,
-                timestamp: new Date().toLocaleTimeString()
-              };
-              setSpeedBreaches(prev => [breach, ...prev]);
-              setCurrentAlert(breach);
-              setOpenAlert(true);
-            }
-          });
-        })
-        .catch(error => console.error('Error fetching data:', error));
-    }, 3000);
+    let isMounted = true;
+    const controller = new AbortController();
 
-    return () => clearInterval(interval);
+    const fetchData = async () => {
+      try {
+        const response = await fetch("/api/vehicle-data", {
+          signal: controller.signal
+        });
+
+        if (!response.ok) throw new Error("Failed to fetch vehicle data");
+
+        const data = await response.json();
+        if (!isMounted) return;
+
+        setSpeedData(data);
+        setLoading(false);
+        detectBreaches(data);
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          setError("Unable to fetch vehicle data.");
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+    const interval = setInterval(fetchData, POLL_INTERVAL);
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+      clearInterval(interval);
+    };
   }, []);
+
+  const detectBreaches = (data) => {
+    const now = Date.now();
+
+    data.forEach((vehicle) => {
+      if (vehicle.currentSpeed > vehicle.maxSpeed) {
+        const lastTime = lastBreachRef.current[vehicle.id] || 0;
+
+        if (now - lastTime > BREACH_COOLDOWN) {
+          const breach = {
+            id: now,
+            vehicleId: vehicle.id,
+            vehicleNumber: vehicle.vehicleNumber,
+            speed: vehicle.currentSpeed,
+            maxSpeed: vehicle.maxSpeed,
+            timestamp: new Date().toLocaleTimeString()
+          };
+
+          lastBreachRef.current[vehicle.id] = now;
+
+          setBreachHistory((prev) => [breach, ...prev.slice(0, 19)]);
+          setAlertQueue((prev) => [...prev, breach]);
+        }
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (!openAlert && alertQueue.length > 0) {
+      setCurrentAlert(alertQueue[0]);
+      setAlertQueue((prev) => prev.slice(1));
+      setOpenAlert(true);
+    }
+  }, [alertQueue, openAlert]);
 
   const handleCloseAlert = () => {
     setOpenAlert(false);
   };
 
   const getSpeedColor = (speed, maxSpeed) => {
-    if (speed > maxSpeed) return 'error.main';
-    if (speed > maxSpeed * 0.9) return 'warning.main';
-    return 'success.main';
+    if (speed > maxSpeed) return "error";
+    if (speed > maxSpeed * 0.9) return "warning";
+    return "success";
   };
 
-  const getSpeedPercentage = (speed, maxSpeed) => {
-    return Math.min(100, (speed / maxSpeed) * 100);
-  };
+  const getSpeedPercentage = (speed, maxSpeed) =>
+    Math.min(100, (speed / maxSpeed) * 100);
 
   return (
     <Box sx={{ p: 3 }}>
@@ -66,76 +118,118 @@ const SpeedMonitor = ({ vehicles, onClose }) => {
         Speed Monitor
       </Typography>
 
-      <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
-        {/* Current Speeds Section */}
-        <Box sx={{ flex: 1 }}>
-          <Typography variant="h5" gutterBottom>
-            Current Speeds
-          </Typography>
-          <Paper sx={{ p: 3, mb: 3 }}>
-            <Grid container spacing={2}>
-              {speedData.map((vehicle) => (
-                <Grid item xs={12} sm={6} key={vehicle.id}>
-                  <Paper elevation={2} sx={{ p: 2 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <Avatar sx={{ bgcolor: 'primary.main', mr: 2 }}>
-                        <SpeedIcon />
-                      </Avatar>
-                      <Typography variant="subtitle1">
-                        {vehicle.vehicleNumber}
-                      </Typography>
-                    </Box>
-
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <Typography
-                        variant="h5"
-                        sx={{
-                          color: getSpeedColor(vehicle.currentSpeed, vehicle.maxSpeed),
-                          mr: 1
-                        }}
-                      >
-                        {vehicle.currentSpeed}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        km/h (Max: {vehicle.maxSpeed} km/h)
-                      </Typography>
-                    </Box>
-
-                    <LinearProgress
-                      variant="determinate"
-                      value={getSpeedPercentage(vehicle.currentSpeed, vehicle.maxSpeed)}
-                      sx={{
-                        height: 8,
-                        borderRadius: 4
-                      }}
-                    />
-                  </Paper>
-                </Grid>
-              ))}
-            </Grid>
-          </Paper>
+      {loading && (
+        <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+          <CircularProgress />
         </Box>
-      </Box>
+      )}
 
-      {/* Vehicle Simulation Section */}
+      {error && <Alert severity="error">{error}</Alert>}
 
-      {/* Speed Breach Alert */}
+      {!loading && !error && (
+        <Grid container spacing={3}>
+          {/* Live Speed Cards */}
+          {speedData.map((vehicle) => (
+            <Grid item xs={12} sm={6} md={4} key={vehicle.id}>
+              <Paper elevation={3} sx={{ p: 3 }}>
+                <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                  <Avatar sx={{ bgcolor: "primary.main", mr: 2 }}>
+                    <SpeedIcon />
+                  </Avatar>
+                  <Typography variant="subtitle1">
+                    {vehicle.vehicleNumber}
+                  </Typography>
+                </Box>
+
+                <Typography
+                  variant="h5"
+                  color={getSpeedColor(
+                    vehicle.currentSpeed,
+                    vehicle.maxSpeed
+                  )}
+                >
+                  {vehicle.currentSpeed} km/h
+                </Typography>
+
+                <Typography variant="body2" color="text.secondary">
+                  Max: {vehicle.maxSpeed} km/h
+                </Typography>
+
+                <LinearProgress
+                  variant="determinate"
+                  value={getSpeedPercentage(
+                    vehicle.currentSpeed,
+                    vehicle.maxSpeed
+                  )}
+                  color={getSpeedColor(
+                    vehicle.currentSpeed,
+                    vehicle.maxSpeed
+                  )}
+                  sx={{ height: 10, borderRadius: 5, mt: 2 }}
+                />
+              </Paper>
+            </Grid>
+          ))}
+
+          {/* Breach History Panel */}
+          <Grid item xs={12}>
+            <Paper sx={{ p: 3 }}>
+              <Typography variant="h6" gutterBottom>
+                Recent Speed Breaches
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+
+              {breachHistory.length === 0 && (
+                <Typography variant="body2" color="text.secondary">
+                  No breaches detected.
+                </Typography>
+              )}
+
+              {breachHistory.map((breach) => (
+                <Box
+                  key={breach.id}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 1
+                  }}
+                >
+                  <Typography variant="body2">
+                    {breach.vehicleNumber} - {breach.speed} km/h
+                  </Typography>
+                  <Chip
+                    label={breach.timestamp}
+                    color="error"
+                    size="small"
+                  />
+                </Box>
+              ))}
+            </Paper>
+          </Grid>
+        </Grid>
+      )}
+
+      {/* Alert Snackbar */}
       <Snackbar
         open={openAlert}
-        autoHideDuration={6000}
+        autoHideDuration={5000}
         onClose={handleCloseAlert}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
         <Alert
           severity="error"
           icon={<NotificationsActiveIcon fontSize="inherit" />}
-          sx={{ width: '100%' }}
+          sx={{ width: "100%" }}
         >
           {currentAlert && (
             <>
-              <Typography variant="subtitle2">Speed Limit Exceeded!</Typography>
+              <Typography variant="subtitle2">
+                Speed Limit Exceeded!
+              </Typography>
               <Typography variant="body2">
-                {currentAlert.vehicleNumber} at {currentAlert.speed} km/h
+                {currentAlert.vehicleNumber} at{" "}
+                {currentAlert.speed} km/h
               </Typography>
             </>
           )}
