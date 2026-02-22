@@ -40,7 +40,14 @@ def structural_score(data):
 def ask_llm(data):
     from google import genai
 
-    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        return {
+            "difficulty_score": 50,
+            "reason": "No API key found"
+        }
+
+    client = genai.Client(api_key=api_key)
 
     prompt = f"""
 Rate merge difficulty from 0 to 100.
@@ -54,19 +61,20 @@ Respond strictly in JSON:
 {{ "difficulty_score": number, "reason": "short sentence" }}
 """
 
-    response = client.models.generate_content(
-        model="gemini-1.5-flash",
-        contents=prompt,
-    )
-
-    text = response.text.strip()
-
     try:
+        response = client.models.generate_content(
+            model="models/gemini-2.0-flash",
+            contents=prompt,
+        )
+
+        text = response.text.strip()
+
         return json.loads(text)
-    except:
+
+    except Exception as e:
         return {
             "difficulty_score": 50,
-            "reason": "Parsing failed"
+            "reason": f"LLM error: {str(e)}"
         }
 
 
