@@ -63,7 +63,7 @@ const SpeedMonitor = ({ vehicles, onClose }) => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Speed Monitor
+        Speed Monitoring Dashboard
       </Typography>
 
       <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
