@@ -1,6 +1,4 @@
 import subprocess
-import json
-import os
 import re
 
 BASE_BRANCH = "main"
@@ -17,9 +15,7 @@ def get_merge_tree_output(base, head, branch):
 
 def analyze_conflicts(merge_output):
     conflict_blocks = re.findall(r"<<<<<<<.*?>>>>>>>.*?\n", merge_output, re.DOTALL)
-
     conflict_lines = sum(len(block.split("\n")) for block in conflict_blocks)
-
     file_paths = re.findall(r"changed in both\n\s+(.*)", merge_output)
 
     return {
@@ -29,53 +25,39 @@ def analyze_conflicts(merge_output):
     }
 
 
-def structural_score(data):
+def calculate_difficulty(data):
     score = 0
-    score += data["conflict_lines"] * 0.3
-    score += data["block_count"] * 5
-    score += data["file_count"] * 10
+
+    # Line complexity (small weight)
+    score += data["conflict_lines"] * 0.5
+
+    # Logical conflict blocks (medium weight)
+    score += data["block_count"] * 8
+
+    # Cross-file conflicts (heavy weight)
+    score += data["file_count"] * 15
+
+    # Extra penalty if many files
+    if data["file_count"] >= 5:
+        score += 20
+
     return score
 
 
-def ask_llm(data):
-    from google import genai
+def generate_reason(data):
+    if data["file_count"] == 0:
+        return "No conflicts detected"
 
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key:
-        return {
-            "difficulty_score": 50,
-            "reason": "No API key found"
-        }
+    if data["file_count"] > 5:
+        return "High cross-file conflict risk"
 
-    client = genai.Client(api_key=api_key)
+    if data["block_count"] > 10:
+        return "Multiple logical conflict blocks"
 
-    prompt = f"""
-Rate merge difficulty from 0 to 100.
+    if data["conflict_lines"] > 50:
+        return "Large conflicting code sections"
 
-Conflict summary:
-- Conflict lines: {data["conflict_lines"]}
-- Conflict blocks: {data["block_count"]}
-- Files involved: {data["file_count"]}
-
-Respond strictly in JSON:
-{{ "difficulty_score": number, "reason": "short sentence" }}
-"""
-
-    try:
-        response = client.models.generate_content(
-            model="models/gemini-2.0-flash",
-            contents=prompt,
-        )
-
-        text = response.text.strip()
-
-        return json.loads(text)
-
-    except Exception as e:
-        return {
-            "difficulty_score": 50,
-            "reason": f"LLM error: {str(e)}"
-        }
+    return "Moderate merge complexity"
 
 
 def optimize(branches):
@@ -91,12 +73,10 @@ def optimize(branches):
         merge_output = get_merge_tree_output(base, current_head, branch_commit)
         data = analyze_conflicts(merge_output)
 
-        s_score = structural_score(data)
-        llm = ask_llm(data)
+        score = calculate_difficulty(data)
+        reason = generate_reason(data)
 
-        final_score = 0.5 * s_score + 0.5 * llm["difficulty_score"]
-
-        order.append((branch, final_score, llm["reason"]))
+        order.append((branch, score, reason))
 
     order.sort(key=lambda x: x[1])
     return order
@@ -106,6 +86,11 @@ if __name__ == "__main__":
     import sys
 
     branches = sys.argv[1:]
+
+    if not branches:
+        print("Provide branch names to evaluate.")
+        exit(1)
+
     result = optimize(branches)
 
     print("\nBest order to merge:\n")
