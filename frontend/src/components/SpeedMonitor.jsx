@@ -66,12 +66,43 @@ const SpeedMonitor = ({ vehicles = [] }) => {
   }), [speedData]);
 
   return (
+    <Box sx={{ p: 3 }}>
+    <Typography variant="h4" fontWeight="900" color="error">
+  Fleet Speed Command
+</Typography>
+
+
+      <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
+        {/* Current Speeds Section */}
+        <Box sx={{ flex: 1 }}>
+          <Typography variant="h5" gutterBottom>
+            Current Speeds
     <Box sx={{ p: 4, bgcolor: '#f5f7fa', minHeight: '100vh' }}>
       {/* Header Section */}
       <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
           <Typography variant="h4" fontWeight="800" color="primary.dark">
             Fleet Speed Command
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Real-time telemetry monitoring for {stats.total} active units
+          </Typography>
+        </Box>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Chip icon={<SpeedIcon />} label={`Live Units: ${stats.total}`} variant="outlined" />
+          <Chip 
+            label={`Violations: ${stats.overspeeding}`} 
+            color={stats.overspeeding > 0 ? "error" : "success"} 
+          />
+        </Box>
+      </Box>
+
+      <Grid container spacing={3}>
+        {/* Main Monitoring Grid */}
+        <Grid item xs={12} lg={8}>
+          <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+            <SpeedIcon color="primary" /> Live Telemetry
+          </Typography>
           </Typography>
           <Typography variant="body1" color="text.secondary">
             Real-time telemetry monitoring for {stats.total} active units

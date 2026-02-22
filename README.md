@@ -1,10 +1,18 @@
-# GeoDash - Fleet Management System
+# What you will get to know ?
+1. How to extract useful data from mobile for real world use cases
+2. What matters most for a problem statement
+3. GPS based use cases
+
+# GeoDash - Fleet Management System 
 
 A modern, real-time fleet management and vehicle tracking solution for logistics companies.
 
 ## What is GeoDash?
 
 GeoDash is an intelligent fleet management platform that helps logistics companies track vehicles in real-time, manage driver alerts, and optimize fleet operations. Built with modern web technologies, it provides instant visibility into your entire vehicle fleet with a beautiful, intuitive dashboard.
+
+project status : paused
+![GeoDash Dashboard](images/geodashimg1.png)
 
 ## Key Features
 
@@ -25,6 +33,28 @@ GeoDash is an intelligent fleet management platform that helps logistics compani
 - One-Click Driver Contact - Call or email drivers instantly
 - Alert details with exact location coordinates
 - Map automatically zooms to alert location
+
+![GeoDash landing page](images/alerts1.png)
+
+![GeoDash landing page](images/alerts2.png)
+
+![GeoDash landing page](images/fleet%20radar.png)
+
+![GeoDash landing page](images/geo%20trigger.png)
+
+![GeoDash landing page](images/reports.png)
+
+![GeoDash landing page](images/speed%20monitor.png)
+
+![GeoDash landing page](images/howworks.png)
+
+
+
+
+
+![GeoDash landing page](images/geodash1.gif)
+
+
 
 ### Dashboard & Analytics
 - Fleet overview with key metrics
@@ -183,9 +213,18 @@ Works perfectly on all devices:
 ## Version Information
 
 - **Version:** 1.0.0
-- **Status:** Production Ready
+- **Status:** on hold. no intent for deployment yet
 - **Last Updated:** January 8, 2026
 
 ---
 
+
 **Smart Fleet Management. Real-time Tracking. Professional Control.**
+
+
+
+
+
+
+
+
